@@ -3,8 +3,21 @@ import tensorflow as tf
 print(tf.__version__)
 
 from wandb_addons.dataset import load_dataset
+from keras_cv.layers import preprocessing
+
 
 AUTOTUNE = tf.data.AUTOTUNE
+
+
+base_augmentations = tf.keras.Sequential(
+    [
+        tf.keras.layers.RandomFlip("horizontal"),
+        tf.keras.layers.RandomRotation(factor=0.02),
+    ],
+    name="base_augmentation",
+)
+
+mixup = preprocessing.MixUp(alpha=0.8)
 
 
 class GetDataloader:
@@ -31,6 +44,9 @@ class GetDataloader:
 
         return image, label
 
+    def _apply_base_augmentations(self, images, labels):
+        images = base_augmentations(images)
+        return images, labels
 
     def get_dataloader(self, name: str):
         assert name in ["train", "val", "test"], "name must be one of train, val, test"
@@ -42,7 +58,13 @@ class GetDataloader:
         dataloader = dataloader.map(self._preprocess_data, num_parallel_calls=AUTOTUNE)
         dataloader = dataloader.batch(self.args.batch_size)
 
-        # TODO: add augmentation policies
+        if name=="train":
+            dataloader = (
+                dataloader
+                .map(self._apply_base_augmentations, num_parallel_calls=AUTOTUNE)
+                .map(lambda images, labels: mixup({"images": images, "labels": labels}), num_parallel_calls=AUTOTUNE)
+                .map(lambda x: (x["images"], x["labels"]), num_parallel_calls=AUTOTUNE)
+            )
 
         dataloader = dataloader.prefetch(AUTOTUNE)
 
