@@ -33,6 +33,32 @@ def main(args: argparse.Namespace):
     validloader = dataloader.get_dataloader("val")
 
     # Get the model
+    model = get_model(args)
+    model.summary()
+
+    # Compile the model
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(),
+        loss=tf.keras.losses.CategoricalCrossentropy() if args.one_hot else tf.keras.losses.SparseCategoricalCrossentropy(),
+        metrics=["accuracy"]
+    )
+
+    # Initialize wandb
+    wandb.init(project=args.wandb_project_name, entity="ml-colabs", config=vars(args))
+
+    # Train the model
+    model.fit(
+        trainloader,
+        epochs=args.epochs,
+        validation_data=validloader,
+        callbacks=[
+            wandb.keras.WandbMetricsLogger(log_freq=2)
+        ]
+    )
+
+    # Evaluate the model
+    eval_loss, eval_acc = model.evaluate(validloader)
+    wandb.log({"eval_loss": eval_loss, "eval_acc": eval_acc})
 
 
 if __name__ == "__main__":
