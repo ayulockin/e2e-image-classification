@@ -48,19 +48,18 @@ def get_effnetv2_backbone(model_name: str, weights:str = "imagenet"):
 def get_backbone(args: argparse.Namespace):
     """Get backbone for the model."""
     if args.model_backbone == "vgg16":
-        base_model = tf.keras.applications.VGG16(include_top=False)
-        base_model.trainable = True
+        base_model = tf.keras.applications.VGG16(include_top=False)        
     elif args.model_backbone == "resnet50":
         base_model = tf.keras.applications.ResNet50(include_top=False)
-        base_model.trainable = True
     elif "convnext" in args.model_backbone:
         base_model = get_convnext_model(args.model_backbone)
-        base_model.trainable = True
     elif "effnetv2" in args.model_backbone:
         base_model = get_effnetv2_backbone(args.model_backbone)
-        base_model.trainable = True
     else:
         raise NotImplementedError("Not implemented for this backbone.")
+
+    if not args.freeze_backbone:
+        base_model.trainable = True
 
     return base_model
 

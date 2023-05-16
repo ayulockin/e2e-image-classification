@@ -6,6 +6,7 @@ import tensorflow as tf
 
 from img_clf.dataloader import GetDataloader
 from img_clf.model import get_model
+from img_clf.callbacks import WandbClfEvalCallback
 
 # write argparse
 
@@ -22,6 +23,7 @@ def get_args():
     parser.add_argument("--dropout_rate", type=float, default=0.2, help="Dropout rate post GAP")
     parser.add_argument("--num_classes", type=int, default=53, help="Number of classes in the dataset")
     parser.add_argument("--one_hot", type=bool, default=True, help="One hot encode the labels")
+    parser.add_argument("--freeze_backbone", type=bool, default=True, help="Freeze the backbone layers")
 
     return parser.parse_args()
 
@@ -52,7 +54,12 @@ def main(args: argparse.Namespace):
         epochs=args.epochs,
         validation_data=validloader,
         callbacks=[
-            wandb.keras.WandbMetricsLogger(log_freq=2)
+            wandb.keras.WandbMetricsLogger(log_freq=2),
+            WandbClfEvalCallback(
+                validloader = validloader,
+                data_table_columns = ["idx", "image", "label"],
+                pred_table_columns = ["epoch", "idx", "image", "label", "pred"]
+            )
         ]
     )
 
