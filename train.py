@@ -1,0 +1,41 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import argparse
+import wandb
+import tensorflow as tf
+
+from img_clf.dataloader import GetDataloader
+from img_clf.model import get_model
+
+# write argparse
+
+def get_args():
+    parser = argparse.ArgumentParser(description="Train image classification model.")
+    parser.add_argument("--batch_size", type=int, default=32, help="batch size for training")
+    parser.add_argument("--epochs", type=int, default=10, help="number of epochs for training")
+    parser.add_argument("--img_height", type=int, default=224, help="image height for training")
+    parser.add_argument("--img_width", type=int, default=224, help="image width for training")
+    parser.add_argument("--img_channels", type=int, default=3, help="image channels for training")
+    parser.add_argument("--shuffle_buffer_size", type=int, default=1000, help="shuffle buffer size for training")
+    parser.add_argument("--wandb_project_name", type=str, default="e2e-img-clf", help="wandb project name")
+    parser.add_argument("--model_backbone", type=str, default="vgg16", help="backbone for the model")
+    parser.add_argument("--dropout_rate", type=float, default=0.2, help="Dropout rate post GAP")
+    parser.add_argument("--num_classes", type=int, default=53, help="Number of classes in the dataset")
+    parser.add_argument("--one_hot", type=bool, default=True, help="One hot encode the labels")
+
+    return parser.parse_args()
+
+
+def main(args: argparse.Namespace):
+    # Get the dataloaders
+    dataloader = GetDataloader(args)
+    trainloader = dataloader.get_dataloader("train")
+    validloader = dataloader.get_dataloader("val")
+
+    # Get the model
+
+
+if __name__ == "__main__":
+    args = get_args()
+
+    main(args)

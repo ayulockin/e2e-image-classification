@@ -57,7 +57,7 @@ def get_backbone(args: argparse.Namespace):
         base_model = get_convnext_model(args.model_backbone)
         base_model.trainable = True
     elif "effnetv2" in args.model_backbone:
-        base_model = get_effnetv2_backbone(args.model_config.backbone)
+        base_model = get_effnetv2_backbone(args.model_backbone)
         base_model.trainable = True
     else:
         raise NotImplementedError("Not implemented for this backbone.")
