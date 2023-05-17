@@ -17,7 +17,7 @@ base_augmentations = tf.keras.Sequential(
     name="base_augmentation",
 )
 
-mixup = preprocessing.MixUp(alpha=0.8)
+mixup = preprocessing.MixUp(alpha=0.3)
 
 
 class GetDataloader:
