@@ -56,9 +56,11 @@ def main(args: argparse.Namespace):
         callbacks=[
             wandb.keras.WandbMetricsLogger(log_freq=2),
             WandbClfEvalCallback(
+                args,
                 validloader = validloader,
                 data_table_columns = ["idx", "image", "label"],
-                pred_table_columns = ["epoch", "idx", "image", "label", "pred"]
+                pred_table_columns = ["epoch", "idx", "image", "label", "pred"],
+                log_explainability=True,
             )
         ]
     )
