@@ -29,9 +29,18 @@ class GetDataloader:
         self.args = args
         self.dataset_path = dataset_path
 
-    def _load_dataset(self):
+    def load_dataset(self):
         datasets, dataset_builder_info = load_dataset(self.dataset_path)
-        return datasets
+        return datasets, dataset_builder_info
+
+    def get_id2label_dict(self):
+        _, ds_info = self.load_dataset()
+        dataset_path = ds_info.data_dir
+        with open(f"{dataset_path}/label.labels.txt") as f:
+            labels = f.read().splitlines()
+            id2label = {i: label for i, label in enumerate(labels)}
+        
+        return id2label
 
     def _preprocess_data(self, example):
         image = example["image"]
@@ -50,7 +59,8 @@ class GetDataloader:
 
     def get_dataloader(self, name: str):
         assert name in ["train", "val", "test"], "name must be one of train, val, test"
-        dataloader = self._load_dataset()[name]
+        ds, _ = self.load_dataset()
+        dataloader = ds[name]
 
         if name=="train":
             dataloader = dataloader.shuffle(self.args.shuffle_buffer_size)

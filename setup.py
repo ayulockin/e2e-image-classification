@@ -12,7 +12,7 @@ def read(fname):
 
 
 setup(
-    name="e2e-image-classification",
+    name="img_clf",
     version="0.0.1",
     author="Ayush Thakur, Soumik Rakshit",
     author_email="mein2work@gmail.com",

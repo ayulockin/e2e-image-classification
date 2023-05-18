@@ -6,9 +6,11 @@ import tensorflow as tf
 
 from img_clf.dataloader import GetDataloader
 from img_clf.model import get_model
-from img_clf.callbacks import WandbClfEvalCallback
+# from img_clf.callbacks import WandbClfEvalCallback
 
-# write argparse
+from wandb_addons.callbacks import WandbGradCAMCallback
+# from wandb_addons.callbacks import WandbClfEvalCallback
+
 
 def get_args():
     parser = argparse.ArgumentParser(description="Train image classification model.")
@@ -34,6 +36,9 @@ def main(args: argparse.Namespace):
     trainloader = dataloader.get_dataloader("train")
     validloader = dataloader.get_dataloader("val")
 
+    # Get the id2label dict
+    id2label = dataloader.get_id2label_dict()
+
     # Get the model
     model = get_model(args)
     model.summary()
@@ -55,13 +60,14 @@ def main(args: argparse.Namespace):
         validation_data=validloader,
         callbacks=[
             wandb.keras.WandbMetricsLogger(log_freq=2),
-            WandbClfEvalCallback(
-                args,
+            WandbGradCAMCallback(
                 validloader = validloader,
                 data_table_columns = ["idx", "image", "label"],
                 pred_table_columns = ["epoch", "idx", "image", "label", "pred"],
+                one_hot_label=args.one_hot,
+                id2label=id2label,
                 log_explainability=True,
-            )
+            ),
         ]
     )
 
