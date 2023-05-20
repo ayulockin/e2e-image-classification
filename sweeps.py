@@ -1,5 +1,5 @@
 import os
-
+import yaml
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import argparse
 import wandb
@@ -13,6 +13,9 @@ from wandb_addons.callbacks.keras import WandbGradCAMCallback
 
 def get_args():
     parser = argparse.ArgumentParser(description="Train image classification model.")
+    parser.add_argument(
+        "--sweep_file", type=str, default="configs/sweeps.yaml", help="sweep file"
+    )
     parser.add_argument(
         "--batch_size", type=int, default=32, help="batch size for training"
     )
@@ -108,7 +111,6 @@ def main(args: argparse.Namespace):
     # Evaluate the model
     eval_loss, eval_acc = model.evaluate(validloader)
     wandb.log({"eval_loss": eval_loss, "eval_acc": eval_acc})
-
 
 if __name__ == "__main__":
     args = get_args()

@@ -1,0 +1,22 @@
+program: sweeps.py
+method: random
+name: hyperparam_tuning
+metric:
+  goal: maximize
+  name: val_acc
+parameters:
+  batch_size:
+    values: [16,32,64]
+  lr:
+    min: 0.0001
+    max: 0.001
+  epochs:
+    values: [5, 10, 15]
+  dropout_rate:
+    values: [0.1, 0.2, 0.3, 0.4, 0.5]
+  one_hot:
+    values: [True, False]
+  freeze_backbone:
+    values: [True, False]
+  model_backbone:
+    values: ["resnet50", "vgg16", "convnext-t", "effnetv2-s"]
