@@ -15,7 +15,7 @@ def get_convnext_model(model_name: str, weights="imagenet"):
     return backbone
 
 
-def get_effnetv2_backbone(model_name: str, weights:str="imagenet"):
+def get_effnetv2_backbone(model_name: str, weights: str = "imagenet"):
     variant = model_name.split("-")[-1]
     if variant == "b2":
         backbone = tf.keras.applications.efficientnet_v2.EfficientNetV2B2
@@ -56,8 +56,8 @@ def get_model(args: argparse.Namespace):
 
     # Backbone
     base_model = get_backbone(args)
-    backbone = base_model(include_top=False, weights='imagenet', input_tensor=inputs)
-    
+    backbone = base_model(include_top=False, weights="imagenet", input_tensor=inputs)
+
     if args.freeze_backbone:
         backbone.trainable = False
     else:

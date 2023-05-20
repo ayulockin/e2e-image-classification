@@ -1,5 +1,6 @@
 import argparse
 import tensorflow as tf
+
 print(tf.__version__)
 
 from wandb_addons.dataset import load_dataset
@@ -22,10 +23,10 @@ mixup = preprocessing.MixUp(alpha=0.3)
 
 class GetDataloader:
     def __init__(
-            self,
-            args: argparse.Namespace,
-            dataset_path: str = "ml-colabs/e2e-img-clf/cards_dataset:v1"
-        ):
+        self,
+        args: argparse.Namespace,
+        dataset_path: str = "ml-colabs/e2e-img-clf/cards_dataset:v1",
+    ):
         self.args = args
         self.dataset_path = dataset_path
 
@@ -39,7 +40,7 @@ class GetDataloader:
         with open(f"{dataset_path}/label.labels.txt") as f:
             labels = f.read().splitlines()
             id2label = {i: label for i, label in enumerate(labels)}
-        
+
         return id2label
 
     def _preprocess_data(self, example):
@@ -62,17 +63,21 @@ class GetDataloader:
         ds, _ = self.load_dataset()
         dataloader = ds[name]
 
-        if name=="train":
+        if name == "train":
             dataloader = dataloader.shuffle(self.args.shuffle_buffer_size)
 
         dataloader = dataloader.map(self._preprocess_data, num_parallel_calls=AUTOTUNE)
         dataloader = dataloader.batch(self.args.batch_size)
 
-        if name=="train":
+        if name == "train":
             dataloader = (
-                dataloader
-                .map(self._apply_base_augmentations, num_parallel_calls=AUTOTUNE)
-                .map(lambda images, labels: mixup({"images": images, "labels": labels}), num_parallel_calls=AUTOTUNE)
+                dataloader.map(
+                    self._apply_base_augmentations, num_parallel_calls=AUTOTUNE
+                )
+                .map(
+                    lambda images, labels: mixup({"images": images, "labels": labels}),
+                    num_parallel_calls=AUTOTUNE,
+                )
                 .map(lambda x: (x["images"], x["labels"]), num_parallel_calls=AUTOTUNE)
             )
 

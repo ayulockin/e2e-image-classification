@@ -1,4 +1,4 @@
-# 
+#
 import os
 import json
 import pandas as pd
@@ -14,7 +14,7 @@ from wandb_addons.dataset import WandbDatasetBuilder
 
 df = pd.read_csv("data/cards.csv")
 _CLASS_LABELS = df["labels"].unique().tolist()
-_CLASS_LABELS = {label:i for i, label in enumerate(_CLASS_LABELS)}
+_CLASS_LABELS = {label: i for i, label in enumerate(_CLASS_LABELS)}
 json.dump(_CLASS_LABELS, open("data/labels.json", "w"))
 
 _DESCRIPTION = "Cards Dataset"
@@ -53,19 +53,13 @@ class CardsDatasetBuilder(WandbDatasetBuilder):
 
     def _split_generators(self, dl_manager: tfds.download.DownloadManager):
         return {
-            "train": self._generate_examples(
-                os.path.join(self.dataset_path, "train")
-            ),
-            "val": self._generate_examples(
-                os.path.join(self.dataset_path, "valid")
-            ),
-            "test": self._generate_examples(
-                os.path.join(self.dataset_path, "test")
-            ),
+            "train": self._generate_examples(os.path.join(self.dataset_path, "train")),
+            "val": self._generate_examples(os.path.join(self.dataset_path, "valid")),
+            "test": self._generate_examples(os.path.join(self.dataset_path, "test")),
         }
 
     def _generate_examples(self, path):
-        image_paths = glob(os.path.join(path,"*","*.jpg"))
+        image_paths = glob(os.path.join(path, "*", "*.jpg"))
         for image_path in image_paths:
             label = _CLASS_LABELS[image_path.split("/")[-2]]
             yield image_path, {
@@ -90,5 +84,7 @@ if __name__ == "__main__":
         description=_DESCRIPTION,
     )
 
-    builder.build_and_upload(create_visualizations=True, max_visualizations_per_split=100)
+    builder.build_and_upload(
+        create_visualizations=True, max_visualizations_per_split=100
+    )
     # builder.download_and_prepare()
