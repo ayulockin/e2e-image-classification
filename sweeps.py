@@ -97,14 +97,6 @@ def main(args: argparse.Namespace):
         validation_data=validloader,
         callbacks=[
             wandb.keras.WandbMetricsLogger(log_freq=2),
-            WandbGradCAMCallback(
-                validloader=validloader,
-                data_table_columns=["idx", "image", "label"],
-                pred_table_columns=["epoch", "idx", "image", "label", "pred"],
-                one_hot_label=args.one_hot,
-                id2label=id2label,
-                log_explainability=True,
-            ),
         ],
     )
 

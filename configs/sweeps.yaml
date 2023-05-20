@@ -1,9 +1,9 @@
 program: sweeps.py
-method: random
+method: bayes
 name: hyperparam_tuning
 metric:
   goal: maximize
-  name: val_acc
+  name: epoch/val_accuracy
 parameters:
   batch_size:
     values: [16,32,64]
