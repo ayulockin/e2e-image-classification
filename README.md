@@ -8,4 +8,4 @@ TODOs:
 - [x] Model pipeline
 - [x] Basline training
 - [x] Augmentation Policies
-- [ ] Eval callback with TFExplain
+- [x] Eval callback with TFExplain
